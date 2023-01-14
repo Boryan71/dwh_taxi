@@ -50,7 +50,7 @@ create table dwh_ryazan.fact_payments(
 CREATE TABLE dwh_ryazan.dim_drivers(
 	personnel_num serial,
 	last_name varchar(20),
-	first_name varchar(20).
+	first_name varchar(20),
 	middle_name varchar(20),
 	birth_dt date,
 	card_num char(19),
@@ -61,6 +61,25 @@ CREATE TABLE dwh_ryazan.dim_drivers(
 	end_dt timestamp(0),
 	processed_dt timestamp(0)
 	);
+
+-- Создание стейджинга "Водители" --
+-- Источник - база данных "taxi"
+CREATE TABLE dwh_ryazan.stg_drivers (
+	driver_license char(12),
+	first_name varchar(20),
+	last_name varchar(20),
+	middle_name varchar(20),
+	driver_valid_to date,
+	card_num char(19),
+	update_dt timestamp(0),
+	birth_dt date
+    );
+
+-- Создание удалений "Водители" --
+-- Источник - база данных "taxi"
+CREATE TABLE dwh_ryazan.stg_drivers_del (
+	driver_license char(12)
+    );
 
 ---------------------------------
 -- Создание измерения "Машины" --
@@ -74,6 +93,23 @@ CREATE TABLE dwh_ryazan.dim_cars(
 	end_dt timestamp(0),
 	processed_dt timestamp(0)
 	);
+
+-- Создание стейджинга "Машины" --
+-- Источник - база данных "taxi"
+CREATE TABLE dwh_ryazan.stg_car_pool (
+	plate_num char(9),
+	model varchar(30),
+	revision_dt date,
+	register_dt date,
+	finished_flg char(1),
+	update_dt timestamp(0)
+    );
+
+-- Создание удалений "Машины" --
+-- Источник - база данных "taxi"
+CREATE TABLE dwh_ryazan.stg_car_pool_del (
+	plate_num char(9)
+    );
 	
 ---------------------------------
 -- Создание измерения "Клиенты" --
@@ -86,68 +122,8 @@ create table dwh_ryazan.dim_clients(
 	end_dt timestamp(0),
 	processed_dt timestamp(0)
 	);
-	
 
-------------------------------------
-------------------------------------
-------------------------------------
--- Создание стейджинга "Водители" --
-------------------------------------
--- Источник - база данных "taxi"	
-CREATE TABLE dwh_ryazan.stg_drivers (
-	driver_license char(12) ,
-	first_name varchar(20) ,
-	last_name varchar(20) ,
-	middle_name varchar(20) ,
-	driver_valid_to date ,
-	card_num char(19) ,
-	update_dt timestamp(0) ,
-	birth_dt date 
-);
-
-----------------------------------------
--- Создание стейджинга "Передвижения" --
-----------------------------------------
--- Источник - база данных "taxi"
-CREATE TABLE dwh_ryazan.stg_movement (
-	movement_id integer,
-	car_plate_num char(9) ,
-	ride integer,
-	event varchar(6) ,
-	dt timestamp(0) 
-);
-
------------------------------------
--- Создание стейджинга "Поездки" --
------------------------------------
--- Источник - база данных "taxi"
-CREATE TABLE dwh_ryazan.stg_rides (
-	ride_id integer,
-	dt timestamp(0) ,
-	client_phone char(18) ,
-	card_num char(19) ,
-	point_from varchar(200) ,
-	point_to varchar(200) ,
-	distance numeric(5, 2) ,
-	price numeric(7, 2) 
-);
-
-----------------------------------
--- Создание стейджинга "Машины" --
-----------------------------------
--- Источник - база данных "taxi"
-CREATE TABLE dwh_ryazan.stg_car_pool (
-	plate_num char(9),
-	model varchar(30),
-	revision_dt date,
-	register_dt date,
-	finished_flg char(1),
-	update_dt timestamp(0)
-);
-
------------------------------------
 -- Создание стейджинга "Клиенты" --
------------------------------------
 -- Источник - база данных "bank"
 CREATE TABLE dwh_ryazan.stg_clients (
 	client_id varchar(10),
@@ -160,15 +136,43 @@ CREATE TABLE dwh_ryazan.stg_clients (
 	phone char(16),
 	create_dt timestamp(0),
 	update_dt timestamp(0)
-);
+    );
 
----------------------------------
 -- Создание стейджинга "Карты" --
----------------------------------
 -- Источник - база данных "bank"
 CREATE TABLE dwh_ryazan.stg_cards (
 	card_num char(20),
 	account char(20),
 	create_dt timestamp(0),
 	update_dt timestamp(0)
-);
+    );
+	
+
+----------------------------------------
+----------------------------------------
+----------------------------------------
+-- Создание стейджинга "Передвижения" --
+----------------------------------------
+-- Источник - база данных "taxi"
+CREATE TABLE dwh_ryazan.stg_movement (
+	movement_id integer,
+	car_plate_num char(9),
+	ride integer,
+	event varchar(6),
+	dt timestamp(0) 
+    );
+
+-----------------------------------
+-- Создание стейджинга "Поездки" --
+-----------------------------------
+-- Источник - база данных "taxi"
+CREATE TABLE dwh_ryazan.stg_rides (
+	ride_id integer,
+	dt timestamp(0),
+	client_phone char(18),
+	card_num char(19),
+	point_from varchar(200),
+	point_to varchar(200),
+	distance numeric(5, 2),
+	price numeric(7, 2) 
+    );
