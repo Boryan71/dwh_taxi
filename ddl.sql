@@ -81,6 +81,14 @@ CREATE TABLE dwh_ryazan.stg_drivers_del (
 	driver_license char(12)
     );
 
+-- Создание мета-данных "Водители"
+create table dwh_ryazan.meta_drivers (
+    max_update_dt timestamp(0)
+);
+
+insert into dwh_ryazan.meta_drivers(max_update_dt)
+values (to_timestamp('1900-01-01', 'YYYY-MM-DD'));
+
 ---------------------------------
 -- Создание измерения "Машины" --
 ---------------------------------
